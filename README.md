@@ -125,7 +125,7 @@ SEA will teach you frameworks later—stick to **vanilla HTML, CSS, and JS** for
 
 **Nope!**  
 APIs can add complexity beyond the scope of this challenge.  
-If you really want to use data from an API, **save it to a file** (like `.json` or `.csv`) and use that instead.
+If you really want to use data from an API, **save it to a file** (like `.json` or `.csv`) and use that instead. 
 
 ---
 

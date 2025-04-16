@@ -11,6 +11,20 @@
     <header class="main-header">
       <h1 class="title">LA TV Shows</h1>
     </header>
+    <div style="text-align: center; margin: 20px;">
+      <input type="text" id="search-input" placeholder="Search movie title..." />
+      <button onclick="searchMovies()">Search</button>
+    </div>
+    <div style="text-align: center; margin: 20px;">
+      <h2>Add a New Movie</h2>
+      <input id="new-title" placeholder="Title" />
+      <input id="new-image" placeholder="Image filename (e.g. myposter.jpg)" />
+      <input id="new-year" placeholder="Year" type="number" />
+      <input id="new-genre" placeholder="Genre" />
+      <input id="new-description" placeholder="Description" />
+      <button onclick="addMovie()">Add Movie</button>
+    </div>
+    
     <div id="card-container"></div>
     <div class="card" style="display: none">
       <div class="card-content">
@@ -26,6 +40,7 @@
     <div class="footer">
       <button onclick="quoteAlert();">Get A Quote!</button>
       <button onclick="removeLastCard();">Remove A Card!</button>
+      <button onclick="sortMoviesByYear();">Sort by Year</button>
     </div>
   </body>
 </html>

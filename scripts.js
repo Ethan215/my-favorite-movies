@@ -31,39 +31,70 @@ const EAST_LOS_HIGH_POSTER_URL =
   "https://static.wikia.nocookie.net/hulu/images/6/64/East_Los_High.jpg";
 
 // This is an array of strings (TV show titles)
-let titles = [
-  "Fresh Prince of Bel Air",
-  "Curb Your Enthusiasm",
-  "East Los High",
+let movies = [
+  {
+    title: "Nezha",
+    image: "Nezha_film_poster.jpg", 
+    year: 2019,
+    genre: "Animation / Fantasy",
+    description: "A rebellious boy born as a demon fights against fate to become a hero."
+  },
+  {
+    title: "Kung Fu Panda",
+    image: "Kung_Fu_Panda_film_posters.jpg",
+    year: 2008,
+    genre: "Animation / Action / Comedy",
+    description: "An unlikely panda becomes the Dragon Warrior and defends the Valley of Peace."
+  },
+  {
+    title: "Minions",
+    image: "minions.jpg", 
+    year: 2015,
+    genre: "Animation / Comedy",
+    description: "The yellow minions search for a new villainous master to serve."
+  },
+  {
+    title: "Avengers: Endgame",
+    image: "Avengers_Endgame_Poster.jpg", 
+    year: 2019,
+    genre: "Action / Sci-Fi / Superhero",
+    description: "The Avengers unite to reverse Thanos' actions and restore the universe."
+  }
 ];
+
 // Your final submission should have much more data than this, and
 // you should use more than just an array of strings to store it all.
 
 // This function adds cards the page to display the data in the array
+function loadMovies() {
+  const saved = localStorage.getItem("movieData");
+  if (saved) {
+    movies = JSON.parse(saved);
+  }
+}
+
 function showCards() {
   const cardContainer = document.getElementById("card-container");
   cardContainer.innerHTML = "";
   const templateCard = document.querySelector(".card");
 
-  for (let i = 0; i < titles.length; i++) {
-    let title = titles[i];
-
-    // This part of the code doesn't scale very well! After you add your
-    // own data, you'll need to do something totally different here.
-    let imageURL = "";
-    if (i == 0) {
-      imageURL = FRESH_PRINCE_URL;
-    } else if (i == 1) {
-      imageURL = CURB_POSTER_URL;
-    } else if (i == 2) {
-      imageURL = EAST_LOS_HIGH_POSTER_URL;
-    }
-
-    const nextCard = templateCard.cloneNode(true); // Copy the template card
-    editCardContent(nextCard, title, imageURL); // Edit title and image
-    cardContainer.appendChild(nextCard); // Add new card to the container
+  for (let movie of movies) {
+    const newCard = templateCard.cloneNode(true);
+    newCard.style.display = "block";
+    newCard.querySelector("h2").textContent = movie.title;
+    const imgElement = newCard.querySelector("img");
+    imgElement.setAttribute("src", movie.image);
+    imgElement.setAttribute("alt", movie.title + " Poster");
+    const list = newCard.querySelector("ul");
+    list.innerHTML = `
+      <li><strong>Year:</strong> ${movie.year}</li>
+      <li><strong>Genre:</strong> ${movie.genre}</li>
+      <li>${movie.description}</li>
+    `;
+    cardContainer.appendChild(newCard);
   }
 }
+
 
 function editCardContent(card, newTitle, newImageURL) {
   card.style.display = "block";
@@ -82,8 +113,10 @@ function editCardContent(card, newTitle, newImageURL) {
 }
 
 // This calls the addCards() function when the page is first loaded
-document.addEventListener("DOMContentLoaded", showCards);
-
+document.addEventListener("DOMContentLoaded", () => {
+  loadMovies();
+  showCards();
+});
 function quoteAlert() {
   console.log("Button Clicked!");
   alert(
@@ -92,6 +125,87 @@ function quoteAlert() {
 }
 
 function removeLastCard() {
-  titles.pop(); // Remove last item in titles array
-  showCards(); // Call showCards again to refresh
+  if (movies.length === 0) {
+    alert("No more movies to remove!");
+    return;
+  }
+  movies.pop();
+  localStorage.setItem("movieData", JSON.stringify(movies)); // 可选同步保存
+  showCards();
+}
+function searchMovies() {
+  const input = document.getElementById("search-input").value.toLowerCase();
+  const filtered = movies.filter(movie =>
+    movie.title.toLowerCase().includes(input)
+  );
+  displayFilteredCards(filtered);
+}
+
+function displayFilteredCards(filteredMovies) {
+  const cardContainer = document.getElementById("card-container");
+  cardContainer.innerHTML = "";
+  const templateCard = document.querySelector(".card");
+
+  for (let movie of filteredMovies) {
+    const newCard = templateCard.cloneNode(true);
+    newCard.style.display = "block";
+    newCard.querySelector("h2").textContent = movie.title;
+    newCard.querySelector("img").src = movie.image;
+    newCard.querySelector("img").alt = movie.title + " Poster";
+
+    const list = newCard.querySelector("ul");
+    list.innerHTML = `
+      <li><strong>Year:</strong> ${movie.year}</li>
+      <li><strong>Genre:</strong> ${movie.genre}</li>
+      <li>${movie.description}</li>
+    `;
+    cardContainer.appendChild(newCard);
+  }
+}
+function addMovie() {
+  // 1. Get the value of the input box
+  const title = document.getElementById("new-title").value;
+  const image = document.getElementById("new-image").value;
+  const year = parseInt(document.getElementById("new-year").value);
+  const genre = document.getElementById("new-genre").value;
+  const description = document.getElementById("new-description").value;
+
+  // 2. Simple validation (make sure it's not empty)
+  if (!title || !image || !year || !genre || !description) {
+    alert("Please fill out all fields!");
+    return;
+  }
+
+  // 3. Constructing a new movie object
+  const newMovie = {
+    title: title,
+    image: image,
+    year: year,
+    genre: genre,
+    description: description
+  };
+
+  // 4. Add the array and refresh the page
+  movies.push(newMovie);
+  showCards();
+  localStorage.setItem("movieData", JSON.stringify(movies));
+
+
+  // 5. clean form
+  document.getElementById("new-title").value = "";
+  document.getElementById("new-image").value = "";
+  document.getElementById("new-year").value = "";
+  document.getElementById("new-genre").value = "";
+  document.getElementById("new-description").value = "";
+}
+let sortAscending = true;
+
+function sortMoviesByYear() {
+  if (sortAscending) {
+    movies.sort((a, b) => a.year - b.year); // 升序
+  } else {
+    movies.sort((a, b) => b.year - a.year); // 降序
+  }
+  sortAscending = !sortAscending;
+  showCards();
 }
